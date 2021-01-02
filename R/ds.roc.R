@@ -127,7 +127,7 @@ if(type != 'combine' & type != 'split' & type != 'both')                        
 
   cally <- paste0("rocDS(", prediction, ",", reference, ",", deparse(breaks), ")")
   print(cally)
-  return "success"
+  return("success")
   #testsofa
 
   ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
