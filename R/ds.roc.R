@@ -100,7 +100,7 @@
 #'   datashield.logout(connections)
 #' }
 #'
-ds.roc <- function(x=NULL, type='split', checks=FALSE, save.mean.Nvalid=FALSE, datasources=NULL){
+ds.roc <- function(prediction=NULL, reference=NULL, breaks=NULL, checks=FALSE, type='split', datasources=NULL){
 
 #####################################################################################
 #MODULE 1: IDENTIFY DEFAULT DS CONNECTIONS                                          #
@@ -110,43 +110,8 @@ ds.roc <- function(x=NULL, type='split', checks=FALSE, save.mean.Nvalid=FALSE, d
   }                                                                                 #
 #####################################################################################
 
-#####################################################################################
-#MODULE 2: SET UP KEY VARIABLES ALLOWING FOR DIFFERENT INPUT FORMATS                #
-  if(is.null(x)){                                                                   #
-    stop("Please provide the name of the input vector!", call.=FALSE)               #
-  }                                                                                 #
-  # the input variable might be given as a variable in a data frame (i.e. D$x)      #
-  # or just as a vector not attached to a table (i.e. x)                            #
-  # we have to make sure the function deals with each case                          #
-  xnames <- extract(x)                                                              #
-  varname <- xnames$elements                                                        #
-  obj2lookfor <- xnames$holders                                                     #
-#####################################################################################
-
-###############################################################################################
-#MODULE 3: GENERIC OPTIONAL CHECKS TO ENSURE CONSISTENT STRUCTURE OF KEY VARIABLES            #
-#IN DIFFERENT SOURCES                                                                         #
-  # beginning of optional checks - the process stops and reports as soon as one               #
-  #check fails                                                                                #
-                                                                                              #
-  if(checks){                                                                                 #
-    message(" -- Verifying the variables in the model")                                       #
-                                                                                              #
-  # check if the input object(s) is(are) defined in all the studies                           #
-  if(is.na(obj2lookfor)){                                                                     #
-    defined <- isDefined(datasources, varname)                                                #
-  }else{                                                                                      #
-    defined <- isDefined(datasources, obj2lookfor)                                            #
-  }                                                                                           #
-                                                                                              #
-  # call the internal function that checks the input object is suitable in all studies        #
-  varClass <- checkClass(datasources, x)                                                      #
-  # the input object must be a numeric or an integer vector                                   #
-  if(!('integer' %in% varClass) & !('numeric' %in% varClass)){                                          #
-    stop("The input object must be an integer or a numeric vector.", call.=FALSE)             #
-  }                                                                                           #
-}                                                                                             #
-###############################################################################################
+checkarg(prediction, "numeric", "prediction", checks, datasources)
+checkarg(reference, "logical", "testing", checks, datasources)
 
 ###################################################################################################
 #MODULE 4: EXTEND "type" argument to include "both" and enable valid alisases                     #
@@ -160,7 +125,11 @@ if(type != 'combine' & type != 'split' & type != 'both')                        
 ###################################################################################################
 
 
-  cally <- paste0("rocDS(", x, ")")
+  cally <- paste0("rocDS(", prediction, ",", reference, ",c(", paste(breaks, collapse=","), "))")
+  print(cally)
+  return "success"
+  #testsofa
+
   ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
 
   Nstudies <- length(datasources)
@@ -231,3 +200,43 @@ if(type != 'combine' & type != 'split' & type != 'both')                        
 
 }
 #ds.mean
+
+checkarg <- function(x, validtype, usage, checks, datasources){
+#####################################################################################
+#MODULE 2: SET UP KEY VARIABLES ALLOWING FOR DIFFERENT INPUT FORMATS                #
+  if(is.null(x)){                                                                   #
+    stop(paste0("Please provide the name of the input vector for ", usage, "!"), call.=FALSE)               #
+  }                                                                                 #
+  # the input variable might be given as a variable in a data frame (i.e. D$x)      #
+  # or just as a vector not attached to a table (i.e. x)                            #
+  # we have to make sure the function deals with each case                          #
+  xnames <- extract(x)                                                              #
+  varname <- xnames$elements                                                        #
+  obj2lookfor <- xnames$holders                                                     #
+#####################################################################################
+
+###############################################################################################
+#MODULE 3: GENERIC OPTIONAL CHECKS TO ENSURE CONSISTENT STRUCTURE OF KEY VARIABLES            #
+#IN DIFFERENT SOURCES                                                                         #
+  # beginning of optional checks - the process stops and reports as soon as one               #
+  #check fails                                                                                #
+                                                                                              #
+  if(checks){                                                                                 #
+    message(paste0(" -- Verifying the variables for ", usage, " in the model"))                                       #
+                                                                                              #
+    # check if the input object(s) is(are) defined in all the studies                           #
+    if(is.na(obj2lookfor)){                                                                     #
+      defined <- isDefined(datasources, varname)                                                #
+    }else{                                                                                      #
+      defined <- isDefined(datasources, obj2lookfor)                                            #
+    }                                                                                           #
+                                                                                                #
+    # call the internal function that checks the input object is suitable in all studies        #
+    varClass <- checkClass(datasources, x)                                                      #
+    # the input object must be a numeric or an integer vector                                   #
+    if(!(validtype %in% varClass)){                                          #
+      stop(paste0("The input vector for ", usage, " must be of type ", validtype, "."), call.=FALSE)             #
+    }                                                                                           #
+  }                                                                                             #
+###############################################################################################
+}
