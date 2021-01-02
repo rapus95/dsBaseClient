@@ -125,7 +125,7 @@ if(type != 'combine' & type != 'split' & type != 'both')                        
 ###################################################################################################
 
 
-  cally <- paste0("rocDS(", prediction, ",", reference, ",c(", paste(breaks, collapse=","), "))")
+  cally <- paste0("rocDS(", prediction, ",", reference, ",", deparse(breaks), ")")
   print(cally)
   return "success"
   #testsofa
