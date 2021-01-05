@@ -126,77 +126,80 @@ if(type != 'combine' & type != 'split' & type != 'both')                        
 
 
   cally <- paste0("rocDS(", prediction, ",", reference, ",", deparse(breaks), ")")
-  print(cally)
-  return("success")
-  #testsofa
 
   ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
 
   Nstudies <- length(datasources)
-  ss.mat <- matrix(as.numeric(matrix(unlist(ss.obj),nrow=Nstudies,byrow=TRUE)[,1:4]),nrow=Nstudies)
-  dimnames(ss.mat) <- c(list(names(ss.obj),names(ss.obj[[1]])[1:4]))
 
-  ValidityMessage.mat <- matrix(matrix(unlist(ss.obj),nrow=Nstudies,byrow=TRUE)[,5],nrow=Nstudies)
-  dimnames(ValidityMessage.mat) <- c(list(names(ss.obj),names(ss.obj[[1]])[5]))
-
-  ss.mat.combined <- t(matrix(ss.mat[1,]))
-
-  ss.mat.combined[1,1] <- (t(matrix(ss.mat[,3]))%*%ss.mat[,1])/sum(ss.mat[,3])
-  ss.mat.combined[1,2] <- sum(ss.mat[,2])
-  ss.mat.combined[1,3] <- sum(ss.mat[,3])
-  ss.mat.combined[1,4] <- sum(ss.mat[,4])
-
-  dimnames(ss.mat.combined) <- c(list("studiesCombined"),list(names(ss.obj[[1]])[1:4]))
-
-  # IF save.mean.Nvalid==TRUE - KEY STUDY SPECIFIC STATISTICS ON APPROPRIATE DATA REPOSITORY SERVERS WITH ASSIGN FUNCTION
-  if(save.mean.Nvalid==TRUE){
-
-    for(j in 1:Nstudies){
-      selected.conn <- datasources[j]
-      mean.study.specific <- ss.mat[j,1]
-      Nvalid.study.specific <- ss.mat[j,3]
-      # SAVE VALIDITY MESSAGE
-      DSI::datashield.assign(selected.conn, "mean.study.specific", as.symbol(mean.study.specific))
-      DSI::datashield.assign(selected.conn, "Nvalid.study.specific", as.symbol(Nvalid.study.specific))
-    }
-
-    # SAVE KEY GLOBAL STATISTICS ON ALL DATA REPOSITORY SERVERS WITH ASSIGN FUNCTION
-    mean.all.studies <- ss.mat.combined[1,1]
-    Nvalid.all.studies <- ss.mat.combined[1,3]
-    DSI::datashield.assign(datasources, "mean.all.studies", as.symbol(mean.all.studies))
-    DSI::datashield.assign(datasources, "Nvalid.all.studies", as.symbol(Nvalid.all.studies))
-
-#############################################################################
-# MODULE 5: CHECK DATA OBJECTS SUCCESSFULLY CREATED                         #
-  key.names <- extract("mean.all.studies")                                  #
-  key.varname <- key.names$elements                                         #
-  key.obj2lookfor <- key.names$holders                                      #
-                                                                            #
-  if(is.na(key.obj2lookfor)){                                               #
-    key.defined <- isDefined(datasources, key.varname)                      #
-  }else{                                                                    #
-    key.defined <- isDefined(datasources, key.obj2lookfor)                  #
-  }                                                                         #
-                                                                            #
-#if(key.defined==TRUE){                                                      #
-#print("Data object <mean.all.studies> created successfully in all sources") #
-#}                                                                           #
-#############################################################################
-}
-
-#PRIMARY FUNCTION OUTPUT SUMMARISE RESULTS FROM
-#AGGREGATE FUNCTION AND RETURN TO CLIENT-SIDE
-  if (type=='split'){
-    return(list(Mean.by.Study=ss.mat,Nstudies=Nstudies,ValidityMessage=ValidityMessage.mat))
+  for(j in 1:Nstudies){
+    ret <- ss.obj[[j]]
+    lines(1-ret.Specificities, ret.Sensitivities)
   }
+  # ss.mat <- matrix(as.numeric(matrix(unlist(ss.obj),nrow=Nstudies,byrow=TRUE)[,1:2]),nrow=Nstudies)
+  # dimnames(ss.mat) <- c(list(names(ss.obj),names(ss.obj[[1]])[1:4]))
 
-  if (type=="combine") {
-    return(list(Global.Mean=ss.mat.combined,Nstudies=Nstudies,ValidityMessage=ValidityMessage.mat))
-  }
+  # ValidityMessage.mat <- matrix(matrix(unlist(ss.obj),nrow=Nstudies,byrow=TRUE)[,5],nrow=Nstudies)
+  # dimnames(ValidityMessage.mat) <- c(list(names(ss.obj),names(ss.obj[[1]])[5]))
 
-  if (type=="both") {
-    return(list(Mean.by.Study=ss.mat,Global.Mean=ss.mat.combined,Nstudies=Nstudies,ValidityMessage=ValidityMessage.mat))
-  }
+  # ss.mat.combined <- t(matrix(ss.mat[1,]))
+
+  # ss.mat.combined[1,1] <- (t(matrix(ss.mat[,3]))%*%ss.mat[,1])/sum(ss.mat[,3])
+  # ss.mat.combined[1,2] <- sum(ss.mat[,2])
+  # ss.mat.combined[1,3] <- sum(ss.mat[,3])
+  # ss.mat.combined[1,4] <- sum(ss.mat[,4])
+
+  # dimnames(ss.mat.combined) <- c(list("studiesCombined"),list(names(ss.obj[[1]])[1:4]))
+
+#   # IF save.mean.Nvalid==TRUE - KEY STUDY SPECIFIC STATISTICS ON APPROPRIATE DATA REPOSITORY SERVERS WITH ASSIGN FUNCTION
+#   if(save.mean.Nvalid==TRUE){
+
+#     for(j in 1:Nstudies){
+#       selected.conn <- datasources[j]
+#       mean.study.specific <- ss.mat[j,1]
+#       Nvalid.study.specific <- ss.mat[j,3]
+#       # SAVE VALIDITY MESSAGE
+#       DSI::datashield.assign(selected.conn, "mean.study.specific", as.symbol(mean.study.specific))
+#       DSI::datashield.assign(selected.conn, "Nvalid.study.specific", as.symbol(Nvalid.study.specific))
+#     }
+
+#     # SAVE KEY GLOBAL STATISTICS ON ALL DATA REPOSITORY SERVERS WITH ASSIGN FUNCTION
+#     mean.all.studies <- ss.mat.combined[1,1]
+#     Nvalid.all.studies <- ss.mat.combined[1,3]
+#     DSI::datashield.assign(datasources, "mean.all.studies", as.symbol(mean.all.studies))
+#     DSI::datashield.assign(datasources, "Nvalid.all.studies", as.symbol(Nvalid.all.studies))
+
+# #############################################################################
+# # MODULE 5: CHECK DATA OBJECTS SUCCESSFULLY CREATED                         #
+#   key.names <- extract("mean.all.studies")                                  #
+#   key.varname <- key.names$elements                                         #
+#   key.obj2lookfor <- key.names$holders                                      #
+#                                                                             #
+#   if(is.na(key.obj2lookfor)){                                               #
+#     key.defined <- isDefined(datasources, key.varname)                      #
+#   }else{                                                                    #
+#     key.defined <- isDefined(datasources, key.obj2lookfor)                  #
+#   }                                                                         #
+#                                                                             #
+# #if(key.defined==TRUE){                                                      #
+# #print("Data object <mean.all.studies> created successfully in all sources") #
+# #}                                                                           #
+# #############################################################################
+# }
+
+# #PRIMARY FUNCTION OUTPUT SUMMARISE RESULTS FROM
+# #AGGREGATE FUNCTION AND RETURN TO CLIENT-SIDE
+#   if (type=='split'){
+#     return(list(Mean.by.Study=ss.mat,Nstudies=Nstudies,ValidityMessage=ValidityMessage.mat))
+#   }
+
+#   if (type=="combine") {
+#     return(list(Global.Mean=ss.mat.combined,Nstudies=Nstudies,ValidityMessage=ValidityMessage.mat))
+#   }
+
+#   if (type=="both") {
+#     return(list(Mean.by.Study=ss.mat,Global.Mean=ss.mat.combined,Nstudies=Nstudies,ValidityMessage=ValidityMessage.mat))
+#   }
+  return(ss.obj)
 
 }
 #ds.mean
