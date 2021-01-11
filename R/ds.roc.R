@@ -110,6 +110,11 @@ ds.roc <- function(prediction=NULL, reference=NULL, breaks=NULL, checks=FALSE, t
   }                                                                                 #
 #####################################################################################
 
+Nstudies <- length(datasources)
+if(Nstudies == 0){
+  return()
+}
+
 checkarg(prediction, "numeric", "prediction", checks, datasources)
 checkarg(reference, "logical", "testing", checks, datasources)
 
@@ -129,9 +134,11 @@ if(type != 'combine' & type != 'split' & type != 'both')                        
 
   ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
 
-  Nstudies <- length(datasources)
   
-  for(j in 1:Nstudies){
+
+  ret = ss.obj[[1]]
+  plot(1 - ret$Specificities, ret$Sensitivities, type="l")
+  for(j in 2:Nstudies){
     ret <- ss.obj[[j]]
     lines(1 - ret$Specificities, ret$Sensitivities)
   }
@@ -199,7 +206,7 @@ if(type != 'combine' & type != 'split' & type != 'both')                        
 #   if (type=="both") {
 #     return(list(Mean.by.Study=ss.mat,Global.Mean=ss.mat.combined,Nstudies=Nstudies,ValidityMessage=ValidityMessage.mat))
 #   }
-  return(ss.obj)
+  return()
 
 }
 #ds.mean
