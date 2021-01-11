@@ -130,10 +130,10 @@ if(type != 'combine' & type != 'split' & type != 'both')                        
   ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
 
   Nstudies <- length(datasources)
-
+  
   for(j in 1:Nstudies){
     ret <- ss.obj[[j]]
-    lines(1-ret.Specificities, ret.Sensitivities)
+    lines(1 - ret$Specificities, ret$Sensitivities)
   }
   # ss.mat <- matrix(as.numeric(matrix(unlist(ss.obj),nrow=Nstudies,byrow=TRUE)[,1:2]),nrow=Nstudies)
   # dimnames(ss.mat) <- c(list(names(ss.obj),names(ss.obj[[1]])[1:4]))
