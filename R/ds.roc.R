@@ -81,12 +81,12 @@ ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
 
   ret = ss.obj[[1]]
   plot(1 - ret$Specificities, ret$Sensitivities, type="l")
+  points(ret$Threshold, col="red")
   for(j in 2:Nstudies){
     ret <- ss.obj[[j]]
     lines(1 - ret$Specificities, ret$Sensitivities)
+    points(ret$Threshold, col="red")
   }
-
-  return()
 
 }
 #ds.roc
