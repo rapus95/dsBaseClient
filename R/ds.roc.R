@@ -6,8 +6,8 @@
 #' @details  This function is similar to the function \code{roc} in pROC.
 #' 
 #' Server function called: \code{rocDS}
-#' @param prediction a numeric vector (values between 0 and 1) holding the tendency to lean towards a positive or negative outcome.
 #' @param reference a logical (boolean) vector refering to the "truth" on which case is positive/true or negative/false.
+#' @param prediction a numeric vector (values between 0 and 1) holding the tendency to lean towards a positive or negative outcome.
 #' @param checks logical. If TRUE  optional checks of model
 #' components will be undertaken. Default is FALSE to save time. 
 #' It is suggested that checks
@@ -49,8 +49,8 @@
 #'   
 #'   #Calculate the roc curve of prediction and reference vectors in the server-side
 #'   
-#'   ds.roc(prediction = "D$sex",
-#'           reference = "D$muac",
+#'   ds.roc(reference = "D$muac",
+#'           prediction = "D$sex",
 #'           checks = FALSE,
 #'           datasources = connections)
 #'              
@@ -58,7 +58,7 @@
 #'   datashield.logout(connections)
 #' }
 #'
-ds.roc <- function(prediction=NULL, reference=NULL, checks=FALSE, datasources=NULL){
+ds.roc <- function(reference=NULL, prediction=NULL, checks=FALSE, datasources=NULL){
 
 #####################################################################################
 #MODULE 1: IDENTIFY DEFAULT DS CONNECTIONS                                          #
@@ -70,10 +70,10 @@ ds.roc <- function(prediction=NULL, reference=NULL, checks=FALSE, datasources=NU
 
 Nstudies <- length(datasources)
 
-checkarg(prediction, "numeric", "prediction", checks, datasources)
 checkarg(reference, "logical", "testing", checks, datasources)
+checkarg(prediction, "numeric", "prediction", checks, datasources)
 
-cally <- paste0("rocDS(", prediction, ",", reference, ")")
+cally <- paste0("rocDS(", reference, ",", prediction, ")")
 
 ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
 
