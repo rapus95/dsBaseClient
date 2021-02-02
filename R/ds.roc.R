@@ -87,7 +87,7 @@ ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
     lines(1 - ret$Specificities, ret$Sensitivities)
     points(ret$Threshold, col="red")
   }
-
+  return(ss.obj)
 }
 #ds.roc
 
