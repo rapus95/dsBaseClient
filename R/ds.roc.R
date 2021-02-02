@@ -73,21 +73,9 @@ Nstudies <- length(datasources)
 checkarg(prediction, "numeric", "prediction", checks, datasources)
 checkarg(reference, "logical", "testing", checks, datasources)
 
-###################################################################################################
-#MODULE 4: EXTEND "type" argument to include "both" and enable valid alisases                     #
-if(type == 'combine' | type == 'combined' | type == 'combines' | type == 'c') type <- 'combine'   #
-if(type == 'split' | type == 'splits' | type == 's') type <- 'split'                              #
-if(type == 'both' | type == 'b' ) type <- 'both'                                                  #
-if(type != 'combine' & type != 'split' & type != 'both')                                          #
-  stop('Function argument "type" has to be either "both", "combine" or "split"', call.=FALSE)     #
-                                                                                                  #
-#MODIFY FUNCTION CODE TO DEAL WITH ALL THREE TYPES                                                #
-###################################################################################################
+cally <- paste0("rocDS(", prediction, ",", reference, ")")
 
-
-  cally <- paste0("rocDS(", prediction, ",", reference, ")")
-
-  ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
+ss.obj <- DSI::datashield.aggregate(datasources, as.symbol(cally))
 
   
 
